@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import { useEffect } from 'react'
 import * as gtag from '@/lib/analytics/gtag'
@@ -12,14 +12,12 @@ export function AnalyticsProvider({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
     if (pathname) {
-      const url = pathname + (searchParams?.toString() || '')
-      gtag.pageview(url)
+      gtag.pageview(pathname)
     }
-  }, [pathname, searchParams])
+  }, [pathname])
 
   useEffect(() => {
     initHotjar()

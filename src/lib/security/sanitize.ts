@@ -1,10 +1,11 @@
 import createDOMPurify from 'dompurify'
-import { marked } from 'marked'
 import { JSDOM } from 'jsdom'
+import { Marked } from 'marked'
 
 // Criar um ambiente DOM para o DOMPurify
 const window = new JSDOM('').window
 const purify = createDOMPurify(window)
+const marked = new Marked()
 
 export function sanitizeHTML(html: string): string {
   return purify.sanitize(html, {
