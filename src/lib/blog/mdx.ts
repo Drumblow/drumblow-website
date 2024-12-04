@@ -4,11 +4,7 @@ import matter from 'gray-matter'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkHtml from 'remark-html'
-import remarkGfm from 'remark-gfm'
-import rehypeSlug from 'rehype-slug'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { Post } from './types'
-import { calculateReadingTime } from './utils'
 
 const postsDirectory = path.join(process.cwd(), 'content/posts')
 const authorsDirectory = path.join(process.cwd(), 'content/authors')
@@ -16,10 +12,7 @@ const authorsDirectory = path.join(process.cwd(), 'content/authors')
 async function markdownToHtml(content: string) {
   const result = await unified()
     .use(remarkParse)
-    .use(remarkGfm)
     .use(remarkHtml)
-    .use(rehypeSlug)
-    .use(rehypeAutolinkHeadings)
     .process(content)
   
   return result.toString()
@@ -48,18 +41,33 @@ export async function getPost(slug: string): Promise<Post | null> {
       author,
       content: htmlContent,
       tags: data.tags || [],
-      published: data.published ?? false,
-      featured: data.featured ?? false,
-      readingTime: calculateReadingTime(content),
-      seo: {
-        title: data.seo?.title || data.title,
-        description: data.seo?.description || data.description,
-        keywords: data.seo?.keywords || data.tags,
-        ogImage: data.seo?.ogImage
-      }
+      published: data.published ?? false
     }
   } catch (error) {
     console.error(`Error getting post ${slug}:`, error)
     return null
   }
+}
+
+export async function getAllPosts(): Promise<Post[]> {
+  if (!fs.existsSync(postsDirectory)) {
+    return []
+  }
+
+  const files = fs.readdirSync(postsDirectory)
+  const posts = []
+
+  for (const file of files) {
+    if (!file.endsWith('.mdx')) continue
+    
+    const slug = file.replace(/\.mdx$/, '')
+    const post = await getPost(slug)
+    if (post && post.published) {
+      posts.push(post)
+    }
+  }
+
+  return posts.sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime()
+  })
 }

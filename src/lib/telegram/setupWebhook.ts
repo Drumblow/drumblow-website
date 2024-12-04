@@ -1,9 +1,13 @@
 import { TELEGRAM_CONFIG } from './config'
 
 export async function setupWebhook() {
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/telegram/webhook`
-  
   try {
+    // Remover webhook existente
+    await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/deleteWebhook`
+    )
+
+    // Configurar novo webhook
     const response = await fetch(
       `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/setWebhook`,
       {
@@ -12,14 +16,22 @@ export async function setupWebhook() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          url: webhookUrl,
-          allowed_updates: ['message']
+          url: TELEGRAM_CONFIG.webhookUrl,
+          allowed_updates: ['message'],
+          secret_token: TELEGRAM_CONFIG.secretToken,
+          max_connections: 100,
+          drop_pending_updates: true
         })
       }
     )
 
     const data = await response.json()
-    return data.ok
+    
+    if (!data.ok) {
+      throw new Error(data.description || 'Failed to set webhook')
+    }
+
+    return true
   } catch (error) {
     console.error('Error setting webhook:', error)
     return false

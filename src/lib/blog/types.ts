@@ -10,7 +10,7 @@ export interface Post {
   description: string
   date: string
   author: Author
-  content: string // Mudado de ReactElement para string
+  content: string 
   tags: string[]
   published: boolean
 }

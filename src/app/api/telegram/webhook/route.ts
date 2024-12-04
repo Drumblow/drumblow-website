@@ -1,31 +1,44 @@
 import { NextResponse } from 'next/server'
 import { TelegramClient } from '@/lib/telegram/client'
+import { TELEGRAM_CONFIG } from '@/lib/telegram/config'
+import { headers } from 'next/headers'
+import { z } from 'zod'
+
+const updateSchema = z.object({
+  message: z.object({
+    chat: z.object({
+      id: z.number()
+    }),
+    text: z.string().optional(),
+    from: z.object({
+      id: z.number(),
+      username: z.string().optional()
+    })
+  }).optional()
+})
 
 export async function POST(request: Request) {
-  console.log('Webhook recebido')
-  
   try {
+    // Validar token secreto
+    const headersList = await headers()
+    const secretToken = headersList.get('x-telegram-bot-api-secret-token')
+    
+    if (secretToken !== TELEGRAM_CONFIG.secretToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const update = await request.json()
-    console.log('Update do Telegram:', update)
+    const validatedUpdate = updateSchema.parse(update)
 
-    if (update.message) {
-      const message = update.message
-      console.log('Mensagem recebida:', {
-        from: message.from,
-        text: message.text,
-        chat: message.chat
-      })
-
-      // Processar a mensagem recebida
-      await TelegramClient.getInstance().handleIncomingMessage(update)
+    if (validatedUpdate.message) {
+      await TelegramClient.getInstance().handleIncomingMessage(validatedUpdate)
     }
     
     return NextResponse.json({ ok: true })
   } catch (error) {
-    console.error('Erro processando webhook:', error)
+    console.error('Webhook error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }
 
-// Para garantir que o Next.js aceite requisições POST nesta rota
 export const runtime = 'edge'
