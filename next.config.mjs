@@ -7,9 +7,6 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   output: 'standalone',
-  experimental: {
-    missingSuspenseWithCSRBailout: false
-  },
   images: {
     remotePatterns: [
       {
