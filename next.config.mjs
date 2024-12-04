@@ -7,6 +7,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   output: 'standalone',
+  experimental: {
+    missingSuspenseWithCSRBailout: false
+  },
   images: {
     remotePatterns: [
       {
@@ -15,11 +18,6 @@ const nextConfig = {
         pathname: '/seed/**',
       },
     ],
-  },
-  experimental: {
-    serverActions: {
-      allowedOrigins: ['localhost:3000'],
-    },
   },
 }
 
