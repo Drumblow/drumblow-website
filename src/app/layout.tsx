@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Inter, Source_Sans_3, JetBrains_Mono } from "next/font/google"
-import { Header } from "@/components/layout/header"
-import { Footer } from "@/components/layout/footer"
+import { Header } from "@/components/layouts/header"
+import { Footer } from "@/components/layouts/footer"
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider'
 import "./globals.css"
 

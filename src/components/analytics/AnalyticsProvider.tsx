@@ -16,7 +16,7 @@ export function AnalyticsProvider({
 
   useEffect(() => {
     if (pathname) {
-      const url = pathname + searchParams.toString()
+      const url = pathname + (searchParams?.toString() || '')
       gtag.pageview(url)
     }
   }, [pathname, searchParams])

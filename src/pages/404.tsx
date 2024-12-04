@@ -1,10 +1,11 @@
+import React from 'react'
 import { useRouter } from 'next/router'
 
 export default function Custom404() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="flex items-center justify-center min-h-[60vh]">
       <div className="text-center space-y-6">
         <div className="space-y-2">
           <h1 className="text-6xl font-bold text-primary">404</h1>
