@@ -1,7 +1,7 @@
-import React from 'react'
-import { useRouter } from 'next/router'
+import React, { Suspense } from 'react'
+import { useRouter } from 'next/navigation'
 
-export default function Custom404() {
+function ErrorContent() {
   const router = useRouter()
 
   return (
@@ -24,5 +24,13 @@ export default function Custom404() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Custom404() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <ErrorContent />
+    </Suspense>
   )
 }
