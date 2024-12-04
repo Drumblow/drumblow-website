@@ -1,6 +1,11 @@
 import { TELEGRAM_CONFIG } from './config'
 
 export async function setupWebhook() {
+  if (!TELEGRAM_CONFIG.botToken || !TELEGRAM_CONFIG.webhookUrl) {
+    console.error('Missing required Telegram configuration')
+    return false
+  }
+
   try {
     // Remover webhook existente
     await fetch(

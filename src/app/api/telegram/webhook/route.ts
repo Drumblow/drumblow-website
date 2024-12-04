@@ -19,12 +19,14 @@ const updateSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    // Validar token secreto
-    const headersList = await headers()
-    const secretToken = headersList.get('x-telegram-bot-api-secret-token')
-    
-    if (secretToken !== TELEGRAM_CONFIG.secretToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Validação mais flexível do token
+    if (process.env.NODE_ENV === 'production') {
+      const headersList = await headers()
+      const secretToken = headersList.get('x-telegram-bot-api-secret-token')
+      
+      if (!secretToken || secretToken !== TELEGRAM_CONFIG.secretToken) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
     }
 
     const update = await request.json()
