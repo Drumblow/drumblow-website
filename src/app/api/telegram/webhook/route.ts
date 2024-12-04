@@ -18,8 +18,17 @@ const updateSchema = z.object({
 })
 
 export async function POST(request: Request) {
+  // Validação em runtime
+  if (process.env.VERCEL) {
+    if (!TELEGRAM_CONFIG.botToken) {
+      return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 })
+    }
+    if (!TELEGRAM_CONFIG.adminChatId) {
+      return NextResponse.json({ error: 'Admin chat ID not configured' }, { status: 500 })
+    }
+  }
+
   try {
-    // Validação mais flexível do token
     if (process.env.NODE_ENV === 'production') {
       const headersList = await headers()
       const secretToken = headersList.get('x-telegram-bot-api-secret-token')

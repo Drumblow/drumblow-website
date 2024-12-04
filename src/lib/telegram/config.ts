@@ -12,26 +12,9 @@ const configSchema = z.object({
     `${process.env.NEXT_PUBLIC_API_URL || ''}/api/telegram/webhook`
 }))
 
+// Remova a validação do build time
 export const TELEGRAM_CONFIG = configSchema.parse({
-  botToken: process.env.TELEGRAM_BOT_TOKEN,
-  adminChatId: process.env.TELEGRAM_ADMIN_CHAT_ID,
-  secretToken: process.env.TELEGRAM_SECRET_TOKEN
+  botToken: process.env.TELEGRAM_BOT_TOKEN || '',
+  adminChatId: process.env.TELEGRAM_ADMIN_CHAT_ID || '',
+  secretToken: process.env.TELEGRAM_SECRET_TOKEN || ''
 })
-
-// Validação apenas quando em runtime na Vercel
-export function validateProductionConfig() {
-  if (process.env.VERCEL && !process.env.TELEGRAM_BOT_TOKEN) {
-    throw new Error('TELEGRAM_BOT_TOKEN is required in production')
-  }
-  if (process.env.VERCEL && !process.env.TELEGRAM_ADMIN_CHAT_ID) {
-    throw new Error('TELEGRAM_ADMIN_CHAT_ID is required in production')
-  }
-  if (process.env.VERCEL && !process.env.TELEGRAM_SECRET_TOKEN) {
-    throw new Error('TELEGRAM_SECRET_TOKEN is required in production')
-  }
-}
-
-// Valida apenas em runtime na Vercel
-if (process.env.VERCEL) {
-  validateProductionConfig()
-}
