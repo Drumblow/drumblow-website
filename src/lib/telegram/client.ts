@@ -50,13 +50,13 @@ export class TelegramClient {
 
   async sendMessage(chatId: string, text: string): Promise<boolean> {
     try {
+      const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
       const response = await fetch(
-        `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`,
+        `https://api.telegram.org/bot${botToken}/sendMessage`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Origin': process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
           },
           body: JSON.stringify({
             chat_id: chatId,
@@ -65,9 +65,12 @@ export class TelegramClient {
           })
         }
       )
-
+  
       const data = await response.json()
-      return data.ok
+      if (!data.ok) {
+        throw new Error(data.description || 'Failed to send message')
+      }
+      return true
     } catch (error) {
       console.error('Error sending message:', error)
       return false
