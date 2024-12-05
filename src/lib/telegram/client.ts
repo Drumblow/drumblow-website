@@ -1,4 +1,3 @@
-// src/lib/telegram/client.ts
 import { TELEGRAM_CONFIG } from './config'
 import type { TelegramMessage, TelegramSession } from './types'
 
@@ -20,37 +19,54 @@ export class TelegramClient {
     return TelegramClient.instance
   }
 
-  private async makeRequest(method: string, data: any) {
+  async handleIncomingMessage(update: any): Promise<void> {
     try {
-      const response = await fetch(
-        `https://api.telegram.org/bot${this.botToken}/${method}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
-        }
-      )
+      const message = update.message
+      if (!message) return
 
-      if (!response.ok) {
-        throw new Error(`Telegram API error: ${response.statusText}`)
+      const chatId = message.chat.id.toString()
+      const text = message.text || ''
+      const username = message.from?.username || 'Unknown'
+
+      // Se for mensagem do admin
+      if (chatId === this.adminChatId) {
+        return
       }
 
-      return await response.json()
+      // Atualizar última atividade da sessão
+      const session = this.sessions.get(chatId)
+      if (session) {
+        session.lastActivity = new Date()
+        this.sessions.set(chatId, session)
+      }
+
+      // Encaminhar mensagem para o admin
+      await this.sendMessage(
+        this.adminChatId,
+        `📩 <b>Nova mensagem</b>\nDe: @${username}\n\n${text}`
+      )
     } catch (error) {
-      console.error(`Error in ${method}:`, error)
-      throw error
+      console.error('Error handling incoming message:', error)
     }
   }
 
   async sendMessage(chatId: string, text: string): Promise<boolean> {
     try {
-      await this.makeRequest('sendMessage', {
-        chat_id: this.adminChatId,
-        text: text,
-        parse_mode: 'HTML'
+      const response = await fetch('/api/telegram/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chatId: this.adminChatId,
+          text: text
+        })
       })
+
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
       return true
     } catch (error) {
       console.error('Error sending message:', error)

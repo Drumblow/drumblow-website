@@ -37,7 +37,8 @@ export const securityConfig = {
           'https://api.cloudinary.com',
           'https://*.hotjar.com',
           'wss://*.hotjar.com',
-          'https://www.google-analytics.com'
+          'https://www.google-analytics.com',
+          'https://api.telegram.org' 
         ],
         'frame-src': ["'self'", 'https://*.hotjar.com'],
         'object-src': ["'none'"],
