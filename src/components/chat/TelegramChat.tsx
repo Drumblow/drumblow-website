@@ -21,10 +21,31 @@ export function TelegramChat() {
   const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+  // Registrar o handler na montagem do componente
+  useEffect(() => {
+    console.log('=== Component Mount ===')
+    const handleNewMessage = (message: string) => {
+      console.log('Handler triggered:', message)
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        text: message,
+        timestamp: new Date(),
+        isUser: false
+      }])
+    }
 
+    const client = TelegramClient.getInstance()
+    client.addMessageHandler(handleNewMessage)
+    console.log('Handler registered')
+
+    // Manter o handler mesmo com isOpen false
+    return () => {
+      console.log('Component unmount - removing handler')
+      client.removeMessageHandler(handleNewMessage)
+    }
+  }, [])
+
+  // Efeito para iniciar sessão
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       const startSession = async () => {
@@ -39,14 +60,13 @@ export function TelegramChat() {
           setSessionId(session.chatId)
           setMessages([{
             id: Date.now().toString(),
-            text: 'Olá! Como podemos ajudar você hoje?',
+            text: 'Olá! Como posso ajudar?',
             timestamp: new Date(),
             isUser: false
           }])
         } catch (err) {
-          const error = err as Error
-          console.error('Error starting session:', error.message)
-          setError('Não foi possível iniciar o chat. Tente novamente mais tarde.')
+          console.error('Error starting session:', err)
+          setError('Não foi possível iniciar o chat. Tente novamente.')
         } finally {
           setIsLoading(false)
         }
@@ -55,40 +75,29 @@ export function TelegramChat() {
       startSession()
     }
   }, [isOpen, messages.length])
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
+ 
   const handleSendMessage = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!newMessage.trim() || !sessionId || isLoading) return
-
+ 
     setIsLoading(true)
     try {
       const messageId = Date.now().toString()
-      const newUserMessage: Message = {
+      setMessages(prev => [...prev, {
         id: messageId,
         text: newMessage,
         timestamp: new Date(),
         isUser: true
-      }
-
-      setMessages(prev => [...prev, newUserMessage])
+      }])
       setNewMessage('')
-
-      const success = await TelegramClient.getInstance().sendMessage(
-        sessionId, 
-        `Mensagem do visitante:\n${newMessage}`
+ 
+      await TelegramClient.getInstance().sendTelegramMessage(
+        sessionId,
+        newMessage
       )
-
-      if (!success) {
-        throw new Error('Failed to send message')
-      }
-    } catch (err) {
-      const error = err as Error
-      console.error('Error sending message:', error.message)
-      setError('Não foi possível enviar a mensagem. Tente novamente.')
+    } catch (error) {
+      console.error('Error sending message:', error)
+      setError('Não foi possível enviar a mensagem.')
     } finally {
       setIsLoading(false)
     }

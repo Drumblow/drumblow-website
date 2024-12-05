@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
 import { TelegramClient } from '@/lib/telegram/client'
-import { TELEGRAM_CONFIG } from '@/lib/telegram/config'
-import { headers } from 'next/headers'
 import { z } from 'zod'
 
 const updateSchema = z.object({
@@ -18,33 +16,17 @@ const updateSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  // Validação em runtime
-  if (process.env.VERCEL) {
-    if (!TELEGRAM_CONFIG.botToken) {
-      return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 })
-    }
-    if (!TELEGRAM_CONFIG.adminChatId) {
-      return NextResponse.json({ error: 'Admin chat ID not configured' }, { status: 500 })
-    }
-  }
-
   try {
-    if (process.env.NODE_ENV === 'production') {
-      const headersList = await headers()
-      const secretToken = headersList.get('x-telegram-bot-api-secret-token')
-      
-      if (!secretToken || secretToken !== TELEGRAM_CONFIG.secretToken) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      }
-    }
-
+    console.log('Webhook received')
     const update = await request.json()
+    console.log('Update:', JSON.stringify(update, null, 2))
+    
     const validatedUpdate = updateSchema.parse(update)
-
-    if (validatedUpdate.message) {
+    
+    if (validatedUpdate.message?.text) {
       await TelegramClient.getInstance().handleIncomingMessage(validatedUpdate)
     }
-    
+
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('Webhook error:', error)

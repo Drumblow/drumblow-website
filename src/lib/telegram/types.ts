@@ -1,4 +1,3 @@
-// src/lib/telegram/types.ts
 export interface TelegramMessage {
   id: string
   text: string
