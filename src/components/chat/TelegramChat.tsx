@@ -18,6 +18,7 @@ export function TelegramChat() {
   const [newMessage, setNewMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [sessionId, setSessionId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -27,22 +28,27 @@ export function TelegramChat() {
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       const startSession = async () => {
+        setIsLoading(true)
         try {
+          const visitorId = `visitor_${Math.random().toString(36).substring(7)}`
           const session = await TelegramClient.getInstance().startSession(
-            'website_user',
+            visitorId,
             'Website Visitor'
           )
-          setSessionId(session.chatId)
           
+          setSessionId(session.chatId)
           setMessages([{
             id: Date.now().toString(),
             text: 'Olá! Como podemos ajudar você hoje?',
             timestamp: new Date(),
             isUser: false
           }])
-        } catch (err: unknown) {
+        } catch (err) {
           const error = err as Error
           console.error('Error starting session:', error.message)
+          setError('Não foi possível iniciar o chat. Tente novamente mais tarde.')
+        } finally {
+          setIsLoading(false)
         }
       }
 
@@ -54,21 +60,9 @@ export function TelegramChat() {
     scrollToBottom()
   }, [messages])
 
-  useEffect(() => {
-    return () => {
-      if (sessionId) {
-        try {
-          TelegramClient.getInstance().endSession(sessionId)
-        } catch (err: unknown) {
-          const error = err as Error
-          console.error('Error ending session:', error.message)
-        }
-      }
-    }
-  }, [sessionId])
-
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || !sessionId) return
+  const handleSendMessage = async (event: React.FormEvent) => {
+    event.preventDefault()
+    if (!newMessage.trim() || !sessionId || isLoading) return
 
     setIsLoading(true)
     try {
@@ -81,13 +75,20 @@ export function TelegramChat() {
       }
 
       setMessages(prev => [...prev, newUserMessage])
-
-      await TelegramClient.getInstance().sendMessage(sessionId, newMessage)
-
       setNewMessage('')
-    } catch (err: unknown) {
+
+      const success = await TelegramClient.getInstance().sendMessage(
+        sessionId, 
+        `Mensagem do visitante:\n${newMessage}`
+      )
+
+      if (!success) {
+        throw new Error('Failed to send message')
+      }
+    } catch (err) {
       const error = err as Error
       console.error('Error sending message:', error.message)
+      setError('Não foi possível enviar a mensagem. Tente novamente.')
     } finally {
       setIsLoading(false)
     }
@@ -119,6 +120,12 @@ export function TelegramChat() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+            {error}
+          </div>
+        )}
+        
         {messages.map((message) => (
           <div
             key={message.id}
@@ -141,14 +148,11 @@ export function TelegramChat() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            handleSendMessage()
-          }}
-          className="flex gap-2"
-        >
+      <form
+        onSubmit={handleSendMessage}
+        className="p-4 border-t"
+      >
+        <div className="flex gap-2">
           <input
             type="text"
             value={newMessage}
@@ -157,11 +161,15 @@ export function TelegramChat() {
             className="flex-1 rounded-md border border-input px-3 py-2 text-sm"
             disabled={isLoading}
           />
-          <Button type="submit" variant="icon" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            variant="icon" 
+            disabled={isLoading || !newMessage.trim()}
+          >
             <Send className="h-4 w-4" />
           </Button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   )
 }
