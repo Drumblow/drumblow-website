@@ -1,11 +1,12 @@
+// src/lib/telegram/client.ts
 import { TELEGRAM_CONFIG } from './config'
-import type { TelegramMessage, TelegramSession } from './types'
+import type { TelegramMessage, TelegramSession, TelegramWebhookUpdate } from './types'
 
 export class TelegramClient {
   private static instance: TelegramClient
   private sessions: Map<string, TelegramSession> = new Map()
-  private botToken: string
-  private adminChatId: string
+  private readonly botToken: string
+  private readonly adminChatId: string
 
   private constructor() {
     this.botToken = TELEGRAM_CONFIG.botToken
@@ -19,7 +20,7 @@ export class TelegramClient {
     return TelegramClient.instance
   }
 
-  async handleIncomingMessage(update: any): Promise<void> {
+  async handleIncomingMessage(update: TelegramWebhookUpdate): Promise<void> {
     try {
       const message = update.message
       if (!message) return
@@ -28,19 +29,16 @@ export class TelegramClient {
       const text = message.text || ''
       const username = message.from?.username || 'Unknown'
 
-      // Se for mensagem do admin
       if (chatId === this.adminChatId) {
         return
       }
 
-      // Atualizar última atividade da sessão
       const session = this.sessions.get(chatId)
       if (session) {
         session.lastActivity = new Date()
         this.sessions.set(chatId, session)
       }
 
-      // Encaminhar mensagem para o admin
       await this.sendMessage(
         this.adminChatId,
         `📩 <b>Nova mensagem</b>\nDe: @${username}\n\n${text}`
@@ -52,22 +50,24 @@ export class TelegramClient {
 
   async sendMessage(chatId: string, text: string): Promise<boolean> {
     try {
-      const response = await fetch('/api/telegram/message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chatId: this.adminChatId,
-          text: text
-        })
-      })
+      const response = await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Origin': process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: text,
+            parse_mode: 'HTML'
+          })
+        }
+      )
 
-      if (!response.ok) {
-        throw new Error('Failed to send message')
-      }
-
-      return true
+      const data = await response.json()
+      return data.ok
     } catch (error) {
       console.error('Error sending message:', error)
       return false

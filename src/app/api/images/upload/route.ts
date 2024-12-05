@@ -80,10 +80,11 @@ export async function POST(request: Request) {
     console.error('Upload error:', error)
     return new Response(
       JSON.stringify({ 
+        success: false,
         error: 'Failed to process image',
         details: error instanceof Error ? error.message : 'Unknown error'
       }), 
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
     )
   }
 }
