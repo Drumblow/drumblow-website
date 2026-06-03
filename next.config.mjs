@@ -15,6 +15,19 @@ const nextConfig = {
       },
     ],
   },
+  // Redirects for locale-less paths to default locale
+  async redirects() {
+    return [
+      { source: '/projetos', destination: '/en/projetos', permanent: true },
+      { source: '/about', destination: '/en/about', permanent: true },
+      { source: '/contact', destination: '/en/contact', permanent: true },
+      { source: '/products', destination: '/en/products', permanent: true },
+      { source: '/blog', destination: '/en/blog', permanent: true },
+      { source: '/blog/:slug', destination: '/en/blog/:slug', permanent: true },
+      { source: '/projetos/:slug', destination: '/en/projetos/:slug', permanent: true },
+    ]
+  },
+
   // Force webpack for build to support custom webpack config (ws fallback).
   // Turbopack is default in Next 16; can migrate later in PR 1b if desired.
   // See: https://nextjs.org/docs/app/api-reference/next-config-js/turbopack

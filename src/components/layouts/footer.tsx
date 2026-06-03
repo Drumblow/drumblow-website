@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 
 export function Footer() {
@@ -31,7 +31,7 @@ export function Footer() {
               { href: "/about", label: t("nav_about") },
             ].map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="text-sm text-gray-500 hover:text-orange-500 transition-colors">
+                <Link href={l.href as any} className="text-sm text-gray-500 hover:text-orange-500 transition-colors">
                   {l.label}
                 </Link>
               </li>
