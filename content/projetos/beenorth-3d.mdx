@@ -1,0 +1,43 @@
+---
+title: "BeeNorth 3D"
+description: "E-commerce completo para produtos 3D-printed personalizados (home decor, business, party). Integração total com Stripe e Canada Post para envios no Canadá."
+stacks: ["Next.js", "TypeScript", "Tailwind 4", "Rust", "Axum", "PostgreSQL", "Stripe", "Canada Post"]
+domains: ["E-commerce", "Logística", "SaaS"]
+country: "Canadá"
+status: "Ativo"
+liveUrl: "https://beenorth3d.com"
+metrics:
+  migrations: 25
+  backendLOC: 4000
+date: "2026-01-01"
+---
+
+# BeeNorth 3D
+
+Loja online especializada em itens decorativos e utilitários impressos em 3D, com base em Sarnia, Ontario, Canadá. Foco em produtos personalizados de alta qualidade.
+
+## Stack
+
+- **Frontend**: Next.js 16 (App Router, TypeScript, Tailwind 4) no Vercel
+- **Backend**: Rust (Axum 0.8 + SQLx + Tokio) no Oracle ARM Free Tier
+- **DB**: PostgreSQL 16
+- **Pagamentos**: Stripe (Payment Intents)
+- **Envios**: Canada Post (cálculo de tarifas + geração de etiquetas completas)
+- **Outros**: Cupons, Blog, Newsletter, Auth, Admin, Analytics, Instagram integration
+
+## Destaques
+
+- 25 migrations incluindo shipments, filament colors, quantity discounts, order public tokens
+- Integração real com Canada Post para labels de envio
+- CI/CD completo (GitHub Actions → cross-compile ARM → deploy Oracle + Vercel)
+- Health checks, backups cron, rollback automático
+
+```mermaid
+graph LR
+  Next[Next.js 16] -->|REST| Axum[Rust Axum]
+  Axum --> PG[(PostgreSQL)]
+  Axum --> Stripe[Stripe]
+  Axum --> CanadaPost[Canada Post API]
+```
+
+**Live**: [beenorth3d.com](https://beenorth3d.com)

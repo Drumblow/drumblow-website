@@ -7,10 +7,11 @@ const postsDirectory = path.join(process.cwd(), 'content/posts')
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await params
   try {
-    const filePath = path.join(postsDirectory, `${params.slug}.mdx`)
+    const filePath = path.join(postsDirectory, `${slug}.mdx`)
     
     if (!fs.existsSync(filePath)) {
       return NextResponse.json(
@@ -23,7 +24,7 @@ export async function GET(
     const { data, content } = matter(fileContents)
 
     return NextResponse.json({
-      slug: params.slug,
+      slug,
       title: data.title,
       description: data.description,
       content,
@@ -42,10 +43,11 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await params
   try {
-    const filePath = path.join(postsDirectory, `${params.slug}.mdx`)
+    const filePath = path.join(postsDirectory, `${slug}.mdx`)
     const { content, metadata } = await request.json()
 
     if (!fs.existsSync(filePath)) {

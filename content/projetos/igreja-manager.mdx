@@ -1,0 +1,49 @@
+---
+title: "Igreja Manager"
+description: "Sistema completo de gestão eclesiástica para igrejas de todos os portes. Membros, EBD, ministérios, financeiro, academia bíblica e RBAC granular."
+stacks: ["Rust", "Actix-Web", "PostgreSQL", "Flutter", "Dart"]
+domains: ["ERP Vertical", "Gestão Eclesiástica", "SaaS"]
+country: "Brasil"
+status: "Ativo"
+liveUrl: "https://igreja.drumblow.com"
+metrics:
+  migrations: 40
+  docs: 30
+  featuresDart: 736
+date: "2026-02-01"
+---
+
+# Igreja Manager
+
+Plataforma enterprise para administração de igrejas, com suporte multi-congregação, internacionalização completa (pt/en/es) e monetização via assinaturas.
+
+## Stack Tecnológica
+
+- **Backend**: Rust (Actix-Web 4.13 + SQLx 0.8)
+- **Banco**: PostgreSQL 16
+- **Frontend**: Flutter (Android, iOS, Web)
+- **Infra**: Docker, Vercel (web), Cloudinary, Mailgun
+
+## Principais Módulos
+
+- Cadastro completo de membros, famílias e visitantes
+- Controle financeiro (dízimos, ofertas, relatórios, plano de contas)
+- Escola Bíblica Dominical (EBD) com frequência, lições e relatórios
+- Gestão de Ministérios com líderes, eventos, instrumentos e permissões
+- Academia Bíblica (gamificada, estilo Duolingo)
+- Roles & Permissões granulares (multi-cargo, pastor, owner, etc.)
+- Congregações, relatórios, auditoria e suporte a internacionalização
+
+## Por que impressiona
+
+Mais de 40 migrations, 30+ documentos de arquitetura e testes, RBAC avançado, testes extensivos e deploy com Docker + CI. Um dos sistemas de gestão eclesiástica mais completos em produção.
+
+```mermaid
+graph LR
+  Flutter[Flutter App] -->|API REST| Backend[Rust Actix]
+  Backend --> PG[(PostgreSQL)]
+  Backend --> Cloudinary[Cloudinary]
+  Backend --> Email[Mailgun]
+```
+
+**Live**: [igreja.drumblow.com](https://igreja.drumblow.com)

@@ -1,12 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   output: 'standalone',
   images: {
     remotePatterns: [
@@ -17,6 +11,10 @@ const nextConfig = {
       },
     ],
   },
+  // Force webpack for build to support custom webpack config (ws fallback).
+  // Turbopack is default in Next 16; can migrate later in PR 1b if desired.
+  // See: https://nextjs.org/docs/app/api-reference/next-config-js/turbopack
+  turbopack: {},
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {

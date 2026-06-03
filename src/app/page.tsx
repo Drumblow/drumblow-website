@@ -1,22 +1,26 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { getAllProjects } from "@/lib/projetos/loader"
 
-export default function Home() {
+export default async function Home() {
+  const projects = await getAllProjects()
+  const featured = projects.slice(0, 3)
+
   return (
     <>
       <section className="relative py-32">
         <div className="container flex flex-col items-center text-center space-y-8">
           <h1 className="text-5xl md:text-6xl font-bold max-w-3xl">
-            Transformando ideias em soluções digitais
+            Software de produção com excelência técnica
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-2xl">
-            Desenvolvemos soluções inovadoras para impulsionar a transformação digital da sua empresa
+            Rust para sistemas críticos, Flutter para apps cross-platform e Next.js para experiências web modernas. Cases reais em produção.
           </p>
           
           <div className="flex gap-4">
-            <Link href="/products">
-              <Button size="lg">Conheça Nossos Produtos</Button>
+            <Link href="/projetos">
+              <Button size="lg">Ver Projetos Realizados</Button>
             </Link>
             <Link href="/contact">
               <Button variant="outline" size="lg">Fale Conosco</Button>
@@ -27,29 +31,28 @@ export default function Home() {
 
       <section className="py-24 bg-gray-50">
         <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Casos de Sucesso
-          </h2>
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <h2 className="text-3xl font-bold">Trabalhos em produção</h2>
+              <p className="text-muted-foreground mt-2">Projetos entregues com código de alto nível e integrações reais.</p>
+            </div>
+            <Link href="/projetos">
+              <Button variant="outline">Ver todos</Button>
+            </Link>
+          </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "ConnectCorp Hub",
-                description: "Plataforma integrada de gestão empresarial que revolucionou a forma de trabalhar."
-              },
-              {
-                title: "Automação de Processos",
-                description: "Redução de 60% no tempo de processamento de dados com nossas soluções."
-              },
-              {
-                title: "Transformação Digital",
-                description: "Implementação completa de estratégia digital para empresas tradicionais."
-              }
-            ].map((case_) => (
-              <div key={case_.title} className="bg-white p-8 rounded-lg border">
-                <h3 className="text-xl font-bold mb-4">{case_.title}</h3>
-                <p className="text-muted-foreground">{case_.description}</p>
-              </div>
+            {featured.map((project) => (
+              <Link key={project.slug} href={`/projetos/${project.slug}`} className="block bg-white p-8 rounded-lg border hover:shadow-sm transition">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold">{project.title}</h3>
+                  <span className={`text-xs px-2 py-1 rounded-full border ${project.status === 'Ativo' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
+                    {project.status}
+                  </span>
+                </div>
+                <p className="text-muted-foreground line-clamp-3">{project.description}</p>
+                <div className="mt-6 text-sm text-primary">Ver case →</div>
+              </Link>
             ))}
           </div>
         </div>
@@ -58,13 +61,13 @@ export default function Home() {
       <section className="py-24">
         <div className="container text-center">
           <h2 className="text-3xl font-bold mb-4">
-            Pronto para transformar seu negócio?
+            Pronto para construir algo excepcional?
           </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Vamos construir juntos a solução ideal para sua empresa
+            Vamos conversar sobre seu próximo projeto de software.
           </p>
           <Link href="/contact">
-            <Button size="lg">Começar Agora</Button>
+            <Button size="lg">Iniciar conversa</Button>
           </Link>
         </div>
       </section>

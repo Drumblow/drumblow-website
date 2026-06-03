@@ -5,9 +5,9 @@ export function Footer() {
     <footer className="w-full border-t bg-background">
       <div className="container py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <h3 className="font-bold mb-4">Drumblow FabricApps</h3>
+          <h3 className="font-bold mb-4">Drumblow</h3>
           <p className="text-sm text-muted-foreground">
-            Soluções modernas para empresas modernas
+            Engenharia de software de alto nível. Rust • Flutter • Next.js
           </p>
         </div>
         
@@ -15,8 +15,8 @@ export function Footer() {
           <h4 className="font-semibold mb-4">Produtos</h4>
           <ul className="space-y-2">
             <li>
-              <Link href="/products/connectcorp-hub" className="text-sm hover:text-primary">
-                ConnectCorp Hub
+              <Link href="/projetos" className="text-sm hover:text-primary">
+                Ver todos os projetos
               </Link>
             </li>
           </ul>
@@ -52,7 +52,7 @@ export function Footer() {
       
       <div className="container py-6 border-t">
         <p className="text-sm text-center text-muted-foreground">
-          © {new Date().getFullYear()} Drumblow FabricApps. Todos os direitos reservados.
+          © {new Date().getFullYear()} Drumblow. Soluções digitais profissionais.
         </p>
       </div>
     </footer>

@@ -22,7 +22,7 @@ export default function ContactPage() {
         .startSession(email, name)
       
       await TelegramClient.getInstance()
-        .sendMessage(session.chatId, `Nova mensagem via formulário:\n\nNome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`)
+        .sendTelegramMessage(session.chatId, `Nova mensagem via formulário:\n\nNome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`)
     } catch (error) {
       console.error('Error sending message:', error)
     } finally {

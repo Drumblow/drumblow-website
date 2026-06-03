@@ -10,8 +10,8 @@ export function Header() {
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/products" className="text-sm font-medium hover:text-primary/80">
-            Produtos
+          <Link href="/projetos" className="text-sm font-medium hover:text-primary/80">
+            Projetos
           </Link>
           <Link href="/about" className="text-sm font-medium hover:text-primary/80">
             Sobre Nós

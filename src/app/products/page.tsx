@@ -1,31 +1,20 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 export default function ProductsPage() {
   return (
-    <div className="container py-16">
-      <h1 className="text-4xl font-bold mb-8">Nossos Produtos</h1>
+    <div className="container py-16 text-center">
+      <h1 className="text-4xl font-bold mb-4">Nossos Produtos</h1>
+      <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+        Nossa vitrine de soluções agora está em <strong>Projetos Realizados</strong>, com cases detalhados e links para sistemas em produção.
+      </p>
       
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="rounded-lg border p-8">
-          <h2 className="text-2xl font-bold mb-4">ConnectCorp Hub</h2>
-          <p className="text-muted-foreground mb-4">
-            Plataforma integrada para gestão corporativa, oferecendo soluções completas para empresas modernas.
-          </p>
-          <Link href="/products/connectcorp-hub">
-            <Button>Saiba Mais</Button>
-          </Link>
-        </div>
+      <Link href="/projetos">
+        <Button size="lg">Ver Projetos Realizados →</Button>
+      </Link>
 
-        <div className="rounded-lg border p-8">
-          <h2 className="text-2xl font-bold mb-4">Soluções Customizadas</h2>
-          <p className="text-muted-foreground mb-4">
-            Desenvolvimento de soluções personalizadas para atender às necessidades específicas do seu negócio.
-          </p>
-          <Link href="/contact">
-            <Button>Entre em Contato</Button>
-          </Link>
-        </div>
+      <div className="mt-12 text-sm text-muted-foreground">
+        Ou entre em contato para soluções customizadas.
       </div>
     </div>
   )
