@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
-/* Tailwind 4 theme - professional design system per planejamento */
+/* Light theme design system - Drumblow */
 @theme {
   --color-background: #ffffff;
-  --color-foreground: #0f172a;
+  --color-foreground: #111827;
   --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
+  --color-card-foreground: #111827;
   --color-popover: #ffffff;
-  --color-popover-foreground: #0f172a;
+  --color-popover-foreground: #111827;
 
-  /* Primary: deep slate (professional) */
-  --color-primary: #0f172a;
-  --color-primary-foreground: #f8fafc;
+  /* Primary: orange */
+  --color-primary: #f97316;
+  --color-primary-foreground: #ffffff;
 
-  /* Secondary: blue */
-  --color-secondary: #3b82f6;
-  --color-secondary-foreground: #f8fafc;
+  /* Secondary: warm orange tint */
+  --color-secondary: #fff7ed;
+  --color-secondary-foreground: #c2410c;
 
-  /* Accent: amber/gold for premium feel (inspired by BeeNorth) */
-  --color-accent: #f59e0b;
-  --color-accent-foreground: #0f172a;
+  /* Accent: lighter orange */
+  --color-accent: #fb923c;
+  --color-accent-foreground: #ffffff;
 
-  --color-muted: #f1f5f9;
+  --color-muted: #f8fafc;
   --color-muted-foreground: #64748b;
 
   --color-border: #e2e8f0;
   --color-input: #e2e8f0;
-  --color-ring: #3b82f6;
+  --color-ring: #f97316;
 
-  /* Additional professional tokens */
-  --color-honey: #f5c542;
-  --color-cream: #fff8f0;
-  --color-charcoal: #1e293b;
+  /* Additional tokens */
+  --color-orange-glow: #fb923c;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f8fafc;
 }
 
 @layer base {
@@ -41,16 +41,53 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  html {
+    scroll-behavior: smooth;
   }
 }
 
-/* Improved prose for MDX cases */
+/* Ensure container is centered */
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
 @layer components {
+  .gradient-text {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-border {
+    position: relative;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.4), rgba(251, 146, 60, 0.1));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .glow-orange {
+    box-shadow: 0 0 40px -10px rgba(249, 115, 22, 0.3);
+  }
+
   .prose {
     --tw-prose-body: var(--color-foreground);
-    --tw-prose-headings: var(--color-primary);
+    --tw-prose-headings: var(--color-foreground);
     --tw-prose-links: var(--color-primary);
-    --tw-prose-bold: var(--color-primary);
+    --tw-prose-bold: var(--color-foreground);
     --tw-prose-counters: var(--color-muted-foreground);
     --tw-prose-bullets: var(--color-muted-foreground);
     --tw-prose-hr: var(--color-border);

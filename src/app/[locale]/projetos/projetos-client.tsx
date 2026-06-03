@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { useTranslations } from "next-intl"
 import { FilterBar } from '@/components/projetos/FilterBar'
 import { ProjectCard } from '@/components/projetos/ProjectCard'
 import { Analytics } from '@/lib/analytics/customEvents'
@@ -18,6 +19,7 @@ type Project = {
 }
 
 export default function ProjetosClient({ projects: initialProjects }: { projects: Project[] }) {
+  const t = useTranslations("Projects")
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -88,7 +90,7 @@ export default function ProjetosClient({ projects: initialProjects }: { projects
 
       <div className="grid gap-8 md:grid-cols-2">
         {filtered.length === 0 && (
-          <p className="text-muted-foreground">Nenhum projeto encontrado com os filtros atuais.</p>
+          <p className="text-muted-foreground">{t("no_results")}</p>
         )}
 
         {filtered.map((project) => (

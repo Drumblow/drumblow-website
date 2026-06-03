@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { getTranslations } from "next-intl/server"
 import { Post } from '@/lib/blog/types'
 
 interface Props {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; locale: string }>
 }
 
 async function getPost(slug: string): Promise<Post | null> {
@@ -19,11 +20,12 @@ async function getPost(slug: string): Promise<Post | null> {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { slug } = await params
+  const { slug, locale } = await params
   const post = await getPost(slug)
-  
+  const t = await getTranslations({ locale, namespace: "Blog" })
+
   if (!post) {
-    return { title: 'Post não encontrado' }
+    return { title: t("title") }
   }
 
   return {
@@ -33,8 +35,9 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const { slug } = await params
+  const { slug, locale } = await params
   const post = await getPost(slug)
+  const t = await getTranslations("Blog")
 
   if (!post) {
     notFound()
@@ -43,7 +46,7 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <div className="container py-16 max-w-3xl mx-auto">
       <Link href="/blog" className="text-sm text-muted-foreground hover:underline mb-8 inline-block">
-        ← Voltar para o Blog
+        ← {t("back_to_blog")}
       </Link>
 
       <article>
@@ -52,19 +55,19 @@ export default async function BlogPostPage({ params }: Props) {
             <span className="font-medium">{post.author?.name || 'Drumblow'}</span>
             <span className="text-muted-foreground">•</span>
             <time className="text-muted-foreground">
-              {new Date(post.date).toLocaleDateString('pt-BR')}
+              {new Date(post.date).toLocaleDateString(locale === 'pt-BR' ? 'pt-BR' : 'en-US')}
             </time>
           </div>
 
           <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-          
+
           <p className="text-xl text-muted-foreground mb-6">{post.description}</p>
 
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.tags.map(tag => (
-                <Link 
-                  key={tag} 
+                <Link
+                  key={tag}
                   href={`/blog?tag=${encodeURIComponent(tag)}`}
                   className="bg-secondary/10 text-secondary-foreground px-3 py-1 rounded-full text-sm hover:bg-secondary/20"
                 >
@@ -75,15 +78,15 @@ export default async function BlogPostPage({ params }: Props) {
           )}
         </header>
 
-        <div 
+        <div
           className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary"
-          dangerouslySetInnerHTML={{ __html: post.content || '' }} 
+          dangerouslySetInnerHTML={{ __html: post.content || '' }}
         />
       </article>
 
       <div className="mt-16 pt-8 border-t">
         <Link href="/blog" className="text-primary hover:underline">
-          ← Ver todos os posts
+          ← {t("view_all_posts")}
         </Link>
       </div>
     </div>

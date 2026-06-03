@@ -2,14 +2,14 @@ import { MDXRemote, type MDXRemoteProps } from 'next-mdx-remote/rsc'
 import Mermaid from './Mermaid'
 
 interface CaseContentProps {
-  mdxSource: MDXRemoteProps['source']
+  content: string
 }
 
-export default function CaseContent({ mdxSource }: CaseContentProps) {
+export default function CaseContent({ content }: CaseContentProps) {
   return (
-    <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary">
+    <article className="prose prose-slate max-w-none prose-headings:font-semibold prose-a:text-orange-500">
       <MDXRemote
-        source={mdxSource}
+        source={content}
         components={{
           pre: ({ children, ...props }: any) => {
             const child = Array.isArray(children) ? children[0] : children

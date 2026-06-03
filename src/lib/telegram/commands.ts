@@ -1,5 +1,3 @@
-import { TelegramClient } from './client';
-
 export async function setupBotCommands() {
   const commands = [
     {
@@ -18,7 +16,7 @@ export async function setupBotCommands() {
 
   try {
     await fetch(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/setMyCommands`,
+      `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN}/setMyCommands`,
       {
         method: 'POST',
         headers: {

@@ -44,6 +44,19 @@ global.console = {
   error: jest.fn()
 }
 
+// Polyfill Response.json for Next.js route tests
+if (!Response.json) {
+  Response.json = function(data, init) {
+    return new Response(JSON.stringify(data), {
+      ...init,
+      headers: {
+        'content-type': 'application/json',
+        ...init?.headers,
+      },
+    })
+  }
+}
+
 // Mock do IntersectionObserver
 global.IntersectionObserver = class {
   observe() { return null }

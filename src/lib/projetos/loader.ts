@@ -1,7 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { serialize } from 'next-mdx-remote/serialize'
 import { z } from 'zod'
 import { ProjectContent, ProjectMeta, ProjectFrontmatter, ProjectFrontmatterSchema } from './types'
 
@@ -21,11 +20,6 @@ export async function getProject(slug: string): Promise<ProjectContent | null> {
 
     const parsedMeta = ProjectFrontmatterSchema.parse(data) as ProjectFrontmatter
 
-    // Serialize MDX for rich rendering (supports custom components like Mermaid)
-    const mdxSource = await serialize(content, {
-      parseFrontmatter: false,
-    })
-
     const projectMeta: ProjectMeta = {
       title: parsedMeta.title,
       description: parsedMeta.description,
@@ -41,7 +35,7 @@ export async function getProject(slug: string): Promise<ProjectContent | null> {
 
     return {
       meta: projectMeta,
-      mdxSource,
+      content,
     }
   } catch (error) {
     console.error(`Error getting project ${slug}:`, error)

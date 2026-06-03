@@ -1,4 +1,3 @@
-import { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { z } from 'zod'
 
 export interface ProjectMeta {
@@ -21,7 +20,7 @@ export interface ProjectMeta {
 
 export interface ProjectContent {
   meta: ProjectMeta
-  mdxSource: MDXRemoteSerializeResult
+  content: string
 }
 
 export interface ProjectFrontmatter {
