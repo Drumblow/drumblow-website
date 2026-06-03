@@ -9,8 +9,6 @@ export async function GET() {
     )
     
     const currentWebhook = await getWebhookResponse.json()
-    console.log('Webhook atual:', currentWebhook)
-
     // Remover webhook existente
     await fetch(
       `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/deleteWebhook`
@@ -18,8 +16,6 @@ export async function GET() {
 
     // Configurar novo webhook
     const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/telegram/webhook`
-    console.log('Configurando novo webhook:', webhookUrl)
-
     const setWebhookResponse = await fetch(
       `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/setWebhook`,
       {
@@ -36,8 +32,6 @@ export async function GET() {
     )
 
     const webhookData = await setWebhookResponse.json()
-    console.log('Resposta da configuração do webhook:', webhookData)
-
     if (!setWebhookResponse.ok) {
       return NextResponse.json({ 
         error: 'Failed to set webhook',

@@ -1,6 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin'
 
-const withNextIntl = createNextIntlPlugin()
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -18,7 +18,6 @@ const nextConfig = {
   // Force webpack for build to support custom webpack config (ws fallback).
   // Turbopack is default in Next 16; can migrate later in PR 1b if desired.
   // See: https://nextjs.org/docs/app/api-reference/next-config-js/turbopack
-  turbopack: {},
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {

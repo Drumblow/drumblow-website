@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useTranslations } from "next-intl"
-import { Button } from '@/components/ui/button'
 import { Analytics } from '@/lib/analytics/customEvents'
 
 type Project = {

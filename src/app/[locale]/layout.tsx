@@ -38,25 +38,21 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params
 
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(locale as typeof routing.locales[number])) {
     notFound()
   }
 
   const messages = await getMessages()
 
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider messages={messages}>
-          <AnalyticsProvider>
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </AnalyticsProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages}>
+      <AnalyticsProvider>
+        <Header />
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
+      </AnalyticsProvider>
+    </NextIntlClientProvider>
   )
 }

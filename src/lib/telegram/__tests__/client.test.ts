@@ -19,14 +19,14 @@ describe('TelegramClient', () => {
     expect(instance1).toBe(instance2)
   })
 
-  describe('sendMessage', () => {
+  describe('sendTelegramMessage', () => {
     it('should send message successfully', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ success: true })
+        json: () => Promise.resolve({ ok: true })
       })
 
-      const result = await client.sendMessage('123', 'test message')
+      const result = await client.sendTelegramMessage('123', 'test message')
       expect(result).toBe(true)
       expect(global.fetch).toHaveBeenCalledTimes(1)
     })
@@ -34,7 +34,7 @@ describe('TelegramClient', () => {
     it('should handle errors gracefully', async () => {
       (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'))
 
-      const result = await client.sendMessage('123', 'test message')
+      const result = await client.sendTelegramMessage('123', 'test message')
       expect(result).toBe(false)
     })
   })
@@ -46,10 +46,13 @@ describe('TelegramClient', () => {
     })
 
     it('should start session successfully', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ success: true })
-      })
+      // setupWebhook: deleteWebhook, setWebhook, getWebhookInfo
+      // startSession: sendTelegramMessage
+      (global.fetch as jest.Mock)
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true }) }) // deleteWebhook
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true }) }) // setWebhook
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true, result: { url: 'http://test' } }) }) // getWebhookInfo
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true }) }) // sendTelegramMessage
 
       const session = await client.startSession('123', 'Test User')
       
@@ -63,14 +66,11 @@ describe('TelegramClient', () => {
     it('should end session successfully', async () => {
       // Setup mocks
       (global.fetch as jest.Mock)
-        .mockResolvedValueOnce({ // Para startSession
-          ok: true,
-          json: () => Promise.resolve({ success: true })
-        })
-        .mockResolvedValueOnce({ // Para endSession
-          ok: true,
-          json: () => Promise.resolve({ success: true })
-        })
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true }) }) // deleteWebhook
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true }) }) // setWebhook
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true, result: { url: 'http://test' } }) }) // getWebhookInfo
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true }) }) // sendTelegramMessage (startSession)
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ ok: true }) }) // sendTelegramMessage (endSession)
 
       // Start a session first
       const session = await client.startSession('123', 'Test User')
@@ -79,7 +79,7 @@ describe('TelegramClient', () => {
       await client.endSession(session.chatId)
       
       // Verify calls
-      expect(global.fetch).toHaveBeenCalledTimes(2)
+      expect(global.fetch).toHaveBeenCalledTimes(5)
     })
   })
 
@@ -87,7 +87,7 @@ describe('TelegramClient', () => {
     it('should handle incoming message correctly', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ success: true })
+        json: () => Promise.resolve({ ok: true })
       })
 
       const update: TelegramWebhookUpdate = {

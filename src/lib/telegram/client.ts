@@ -66,7 +66,7 @@ export class TelegramClient {
       }
 
       const info = await infoResponse.json()
-      console.log('Webhook configured:', info)
+      // Webhook configured successfully
     } catch (error) {
       console.error('Webhook setup error:', error)
       throw error
@@ -89,21 +89,17 @@ export class TelegramClient {
   }
 
   private notifyHandlers(message: string) {
-    console.log('Notifying handlers:', message, this.messageHandlers.length)
     this.messageHandlers.forEach(handler => handler(message))
   }
 
   async handleIncomingMessage(update: TelegramWebhookUpdate): Promise<void> {
     try {
-      console.log('Handling incoming message:', update)
       const message = update.message
       if (!message?.text) return
 
       const chatId = message.chat.id.toString()
       const text = message.text
       const timestamp = new Date()
-
-      console.log('Message from:', chatId, 'Admin:', this.adminChatId)
 
       // Armazenar no histórico
       const sessionHistory = this.messageHistory.get(chatId) || []
@@ -116,7 +112,6 @@ export class TelegramClient {
       this.messageHistory.set(chatId, sessionHistory)
 
       if (chatId === this.adminChatId) {
-        console.log('Admin message received')
         const sessions = Array.from(this.sessions.values())
         if (sessions.length > 0) {
           const latestSession = sessions.reduce((latest, current) => 
@@ -126,7 +121,6 @@ export class TelegramClient {
           await this.sendTelegramMessage(latestSession.userId, text)
         }
       } else {
-        console.log('User message received')
         let session = this.sessions.get(chatId)
         if (!session) {
           session = {
@@ -213,15 +207,18 @@ export class TelegramClient {
   }
 
   async endSession(chatId: string): Promise<void> {
-    const session = this.sessions.get(chatId)
-    if (session) {
-      await this.sendTelegramMessage(
-        this.adminChatId,
-        `🔴 <b>Sessão encerrada</b>\n\nUsuário: ${session.userName}`
-      )
-      this.sessions.delete(chatId)
-      this.messageHistory.delete(chatId)
-      this.messageHandlers = []
+    // Procurar sessão por userId ou chatId
+    for (const [key, session] of this.sessions.entries()) {
+      if (session.chatId === chatId || key === chatId) {
+        await this.sendTelegramMessage(
+          this.adminChatId,
+          `🔴 <b>Sessão encerrada</b>\n\nUsuário: ${session.userName}`
+        )
+        this.sessions.delete(key)
+        this.messageHistory.delete(key)
+        this.messageHandlers = []
+        return
+      }
     }
   }
 

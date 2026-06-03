@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
 import { getProject } from '@/lib/projetos/loader'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props) {
     return { title: t("meta_title") }
   }
 
-  const metaData: any = {
+  const metaData: Metadata = {
     title: `${project.meta.title} | Drumblow`,
     description: project.meta.description,
   }
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: Props) {
       title: project.meta.title,
       description: project.meta.description,
       url: project.meta.liveUrl,
-    }
+    } as Metadata['openGraph']
   }
   return metaData
 }

@@ -35,6 +35,6 @@ describe('Telegram Webhook Route', () => {
 
    const response = await POST(request)
    const data = await response.json()
-   expect(data).toEqual({ ok: true })
+   expect(data).toEqual({ ok: true, ignored: 'not admin chat' })
  })
 })

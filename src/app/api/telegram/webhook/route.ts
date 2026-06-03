@@ -47,21 +47,18 @@ export async function POST(request: Request) {
       
       if (replyToText) {
         targetSessionId = extractSessionId(replyToText)
-        console.log('[WEBHOOK] Reply detected, sessionId:', targetSessionId)
       }
       
       if (!targetSessionId) {
         const latest = ChatStore.findLatestActiveSession()
         if (latest) {
           targetSessionId = latest.sessionId
-          console.log('[WEBHOOK] No reply, using latest active session:', targetSessionId)
         }
       }
       
       if (targetSessionId) {
         const session = ChatStore.getSession(targetSessionId)
         if (!session?.isActive) {
-          console.log('[WEBHOOK] Session is not active, ignoring')
           return NextResponse.json({ ok: true, ignored: 'session ended' })
         }
         
@@ -74,10 +71,9 @@ export async function POST(request: Request) {
             timestamp: new Date().toISOString(),
             from: 'admin',
           })
-          console.log('[WEBHOOK] Message stored for session:', targetSessionId)
         }
       } else {
-        console.log('[WEBHOOK] No active session found for admin message')
+        // No active session found for admin message
       }
     }
 
