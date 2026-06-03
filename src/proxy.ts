@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { securityHeaders } from '@/lib/security/headers'
 import { isRateLimited } from '@/lib/security/rateLimit'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Check rate limit
   if (isRateLimited(request)) {
     return new NextResponse('Too Many Requests', {

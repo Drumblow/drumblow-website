@@ -2,7 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 import { serialize } from 'next-mdx-remote/serialize'
-import { ProjectContent, ProjectMeta, ProjectFrontmatter } from './types'
+import { z } from 'zod'
+import { ProjectContent, ProjectMeta, ProjectFrontmatter, ProjectFrontmatterSchema } from './types'
 
 const projectsDirectory = path.join(process.cwd(), 'content/projetos')
 
@@ -18,7 +19,7 @@ export async function getProject(slug: string): Promise<ProjectContent | null> {
     const fileContents = fs.readFileSync(fullPath, 'utf8')
     const { data, content } = matter(fileContents)
 
-    const meta = data as ProjectFrontmatter
+    const parsedMeta = ProjectFrontmatterSchema.parse(data) as ProjectFrontmatter
 
     // Serialize MDX for rich rendering (supports custom components like Mermaid)
     const mdxSource = await serialize(content, {
@@ -26,16 +27,16 @@ export async function getProject(slug: string): Promise<ProjectContent | null> {
     })
 
     const projectMeta: ProjectMeta = {
-      title: meta.title,
-      description: meta.description,
+      title: parsedMeta.title,
+      description: parsedMeta.description,
       slug,
-      stacks: meta.stacks || [],
-      domains: meta.domains || [],
-      country: meta.country,
-      status: meta.status,
-      liveUrl: meta.liveUrl,
-      metrics: meta.metrics,
-      date: meta.date,
+      stacks: parsedMeta.stacks || [],
+      domains: parsedMeta.domains || [],
+      country: parsedMeta.country,
+      status: parsedMeta.status,
+      liveUrl: parsedMeta.liveUrl,
+      metrics: parsedMeta.metrics,
+      date: parsedMeta.date,
     }
 
     return {

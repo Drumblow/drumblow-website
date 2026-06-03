@@ -96,6 +96,15 @@ export default function ContactPage() {
               Converse com nosso time em tempo real através do chat.
             </p>
           </div>
+
+          <div className="pt-4 border-t">
+            <h3 className="font-semibold mb-3">Projetos em produção</h3>
+            <ul className="space-y-1 text-sm">
+              <li><a href="https://igreja.drumblow.com" target="_blank" className="hover:underline">igreja.drumblow.com</a> — Gestão eclesiástica completa</li>
+              <li><a href="https://invoice.drumblow.com" target="_blank" className="hover:underline">invoice.drumblow.com</a> — Faturamento para negócios canadenses</li>
+              <li><a href="https://beenorth3d.com" target="_blank" className="hover:underline">beenorth3d.com</a> — E-commerce 3D-print (Canadá)</li>
+            </ul>
+          </div>
         </div>
       </div>
 

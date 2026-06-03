@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { getAllProjects } from '@/lib/projetos/loader'
 import ProjetosClient from './projetos-client'
+import { Suspense } from 'react'
 
 export const metadata = {
   title: 'Projetos | Drumblow',
@@ -20,7 +21,9 @@ export default async function ProjetosPage() {
         </p>
       </div>
 
-      <ProjetosClient projects={projects} />
+      <Suspense fallback={<div className="text-center py-8">Carregando filtros...</div>}>
+        <ProjetosClient projects={projects} />
+      </Suspense>
     </div>
   )
 }

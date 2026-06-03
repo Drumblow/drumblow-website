@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is the professional website for **Drumblow** — a software engineering studio specializing in high-quality production systems using Rust, Flutter, and Next.js.
+
+## Features
+- Showcase of real projects: Igreja Manager, BeeNorth 3D, Drumblow Invoice, and Jumb (archived)
+- Rich MDX case studies with architecture diagrams (Mermaid)
+- Screenshot galleries using real assets from the projects
+- Modern design system with Tailwind 4 + custom theme tokens
+- SEO optimized (sitemap, JSON-LD, robots.txt)
+- Contact form integrated with Telegram
+
+## Project Structure Highlights
+- `content/projetos/*.mdx` — Case studies (add new ones following the frontmatter template)
+- `src/lib/projetos/loader.ts` — MDX loader for projects (uses next-mdx-remote)
+- `src/components/projetos/` — FilterBar, ProjectCard, TechBadge, Mermaid, ScreenshotGallery
+- `public/assets/` — Curated logos and screenshots (see Assets Playbook below)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Assets Playbook
+When adding a new case:
+1. Copy relevant images to `public/assets/cases/<slug>/`
+2. Update the gallery data in `src/app/projetos/[slug]/page.tsx`
+3. Add Mermaid diagrams in the MDX file using ```mermaid blocks
+4. Reference images with `/assets/...` paths (optimized with next/image in gallery)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Current assets come from the source repos (newbeenorth3d, Invoice, TRAE/jumb).
+
+## Technologies
+- Next.js 16 + TypeScript + Tailwind 4
+- Framer Motion for micro-interactions
+- next-mdx-remote for rich case studies
+- Reuses existing libs: security, Telegram chat, analytics
+
+## Deploy
+Connected to Vercel. Uses `vercel.json` for security headers.
+
+See the full planning document at `planejamento-novo-website.md` for the complete roadmap.
 
 ## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs)
+- Internal planning: `planejamento-novo-website.md` (and resumo)

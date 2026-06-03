@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
 interface Screenshot {
@@ -35,16 +36,18 @@ export default function ScreenshotGallery({ screenshots, title = "Screenshots" }
           <button
             key={index}
             onClick={() => openLightbox(index)}
+            aria-label={`Ver imagem ampliada: ${shot.alt}`}
             className="group relative aspect-video overflow-hidden rounded-lg border bg-muted hover:border-primary transition"
           >
-            <img 
+            <Image 
               src={shot.src} 
               alt={shot.alt} 
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform"
-              loading="lazy"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             {shot.caption && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-2 text-left">
+              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-2 text-left z-10">
                 {shot.caption}
               </div>
             )}
@@ -61,16 +64,20 @@ export default function ScreenshotGallery({ screenshots, title = "Screenshots" }
           <div className="relative max-w-5xl w-full" onClick={e => e.stopPropagation()}>
             <button 
               onClick={closeLightbox}
-              className="absolute -top-10 right-0 text-white text-2xl hover:text-gray-300"
+              className="absolute -top-10 right-0 text-white text-2xl hover:text-gray-300 z-10"
             >
               ✕
             </button>
 
-            <img 
-              src={selected.src} 
-              alt={selected.alt} 
-              className="max-h-[80vh] w-full object-contain rounded-lg shadow-2xl"
-            />
+            <div className="relative w-full h-[70vh]">
+              <Image 
+                src={selected.src} 
+                alt={selected.alt} 
+                fill
+                className="object-contain rounded-lg shadow-2xl"
+                sizes="100vw"
+              />
+            </div>
 
             {selected.caption && (
               <p className="text-center text-white/80 mt-3 text-sm">{selected.caption}</p>

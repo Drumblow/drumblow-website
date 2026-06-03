@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation'
-import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getProject } from '@/lib/projetos/loader'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import Mermaid from '@/components/projetos/Mermaid'
 import ScreenshotGallery from '@/components/projetos/ScreenshotGallery'
+import ProjectViewTracker from '@/components/projetos/ProjectViewTracker'
+import CaseContent from '@/components/projetos/CaseContent'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -18,10 +18,18 @@ export async function generateMetadata({ params }: Props) {
     return { title: 'Projeto não encontrado' }
   }
 
-  return {
+  const metaData: any = {
     title: `${project.meta.title} | Drumblow`,
     description: project.meta.description,
   }
+  if (project.meta.liveUrl) {
+    metaData.openGraph = {
+      title: project.meta.title,
+      description: project.meta.description,
+      url: project.meta.liveUrl,
+    }
+  }
+  return metaData
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
@@ -52,12 +60,34 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         <p className="text-xl text-muted-foreground mb-8">{meta.description}</p>
 
+        <ProjectViewTracker slug={meta.slug} title={meta.title} />
+
         <div className="flex flex-wrap gap-2 mb-8">
           {meta.stacks.map((s) => (
             <span key={s} className="text-sm bg-muted px-3 py-1 rounded">{s}</span>
           ))}
           <span className="text-sm px-3 py-1 rounded border">{meta.country}</span>
         </div>
+
+        {/* JSON-LD for rich results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: meta.title,
+              description: meta.description,
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web, Android, iOS",
+              offers: {
+                "@type": "Offer",
+                availability: "https://schema.org/InStock",
+              },
+              url: meta.liveUrl,
+            }),
+          }}
+        />
 
         {meta.liveUrl && (
           <div className="mb-12">
@@ -67,28 +97,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         )}
 
-        <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary">
-          <MDXRemote 
-            source={mdxSource} 
-            components={{
-              // Handle mermaid code blocks
-              pre: ({ children, ...props }: any) => {
-                const child = Array.isArray(children) ? children[0] : children
-                if (child?.props?.className === 'language-mermaid') {
-                  return <Mermaid chart={child.props.children as string} />
-                }
-                return <pre {...props}>{children}</pre>
-              },
-              // Optional: nice code blocks for other languages
-              code: ({ className, children, ...props }: any) => {
-                if (className === 'language-mermaid') {
-                  return null // handled by pre
-                }
-                return <code className={className} {...props}>{children}</code>
-              }
-            }}
-          />
-        </article>
+        <CaseContent mdxSource={mdxSource} />
 
         {meta.metrics && (
           <div className="mt-12 pt-8 border-t">
@@ -112,21 +121,27 @@ export default async function ProjectDetailPage({ params }: Props) {
               screenshots={
                 meta.slug === 'beenorth-3d' 
                   ? [
-                      { src: '/assets/logos/LogobeeNorthTransparente.png', alt: 'Logo BeeNorth', caption: 'Logo oficial' },
+                      { src: '/assets/logos/LogobeeNorthTransparente.png', alt: 'Logo BeeNorth', caption: 'Logo oficial transparente' },
                       { src: '/assets/logos/logoBeeNorthComfundo.jpeg', alt: 'Logo com fundo', caption: 'Versão com fundo' },
+                      { src: '/assets/logos/logoVersaoHorizontalTransparente.png', alt: 'Logo horizontal', caption: 'Versão horizontal' },
                     ]
                   : meta.slug === 'invoice'
                   ? [
                       { src: '/assets/cases/invoice/drumblow_feature_graphic_1024x500.png', alt: 'Feature graphic', caption: 'Play Store feature graphic' },
-                      { src: '/assets/cases/invoice/hero-composite.png', alt: 'Web hero', caption: 'Interface web' },
+                      { src: '/assets/cases/invoice/hero-composite.png', alt: 'Web hero', caption: 'Interface web principal' },
                       { src: '/assets/cases/invoice/mobile-invoices.jpeg', alt: 'Mobile invoices', caption: 'Lista de invoices no mobile' },
+                      { src: '/assets/cases/invoice/mobile-invoice-detail.jpeg', alt: 'Detalhe invoice mobile', caption: 'Detalhe de invoice' },
+                      { src: '/assets/cases/invoice/mobile-settings.jpeg', alt: 'Configurações mobile', caption: 'Tela de configurações' },
                     ]
-                  : [
+                  : meta.slug === 'jumb'
+                  ? [
                       { src: '/assets/cases/jumb/Registration & Login.jpg', alt: 'Login', caption: 'Tela de registro e login' },
                       { src: '/assets/cases/jumb/Explore Activities Map.jpg', alt: 'Mapa', caption: 'Exploração de atividades no mapa' },
                       { src: '/assets/cases/jumb/Activity Details.jpg', alt: 'Detalhes', caption: 'Detalhes da atividade' },
                       { src: '/assets/cases/jumb/User Profile.jpg', alt: 'Perfil', caption: 'Perfil do usuário' },
+                      { src: '/assets/cases/jumb/Chat.jpg', alt: 'Chat', caption: 'Interface de chat' },
                     ]
+                  : []
               } 
             />
           </div>

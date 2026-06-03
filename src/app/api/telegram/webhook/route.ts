@@ -34,4 +34,5 @@ export async function POST(request: Request) {
   }
 }
 
-export const runtime = 'edge'
+// Removed edge runtime to allow better static generation and avoid Vercel warnings.
+// These routes work fine on the default Node.js runtime.

@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { useState, useEffect } from 'react'
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { FilterBar } from '@/components/projetos/FilterBar'
+import { ProjectCard } from '@/components/projetos/ProjectCard'
+import { Analytics } from '@/lib/analytics/customEvents'
 
 type Project = {
   title: string
@@ -16,9 +18,18 @@ type Project = {
 }
 
 export default function ProjetosClient({ projects: initialProjects }: { projects: Project[] }) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+
   const [projects] = useState(initialProjects)
-  const [selectedStacks, setSelectedStacks] = useState<string[]>([])
-  const [selectedStatus, setSelectedStatus] = useState<'all' | 'Ativo' | 'Arquivado'>('all')
+
+  // Initialize from URL
+  const initialStacks = searchParams?.get('stacks') ? searchParams!.get('stacks')!.split(',') : []
+  const initialStatus = (searchParams?.get('status') as 'all' | 'Ativo' | 'Arquivado') || 'all'
+
+  const [selectedStacks, setSelectedStacks] = useState<string[]>(initialStacks)
+  const [selectedStatus, setSelectedStatus] = useState<'all' | 'Ativo' | 'Arquivado'>(initialStatus)
 
   const allStacks = Array.from(new Set(projects.flatMap(p => p.stacks))).sort()
 
@@ -28,35 +39,52 @@ export default function ProjetosClient({ projects: initialProjects }: { projects
     return stackMatch && statusMatch
   })
 
-  const toggleStack = (stack: string) => {
-    setSelectedStacks(prev =>
-      prev.includes(stack) ? prev.filter(s => s !== stack) : [...prev, stack]
-    )
+  // Sync state to URL
+  const updateURL = (stacks: string[], status: string) => {
+    const params = new URLSearchParams()
+    if (stacks.length > 0) params.set('stacks', stacks.join(','))
+    if (status !== 'all') params.set('status', status)
+    const query = params.toString()
+    const basePath = pathname || '/projetos'
+    router.replace(query ? `${basePath}?${query}` : basePath, { scroll: false })
   }
+
+  const toggleStack = (stack: string) => {
+    const newStacks = selectedStacks.includes(stack)
+      ? selectedStacks.filter(s => s !== stack)
+      : [...selectedStacks, stack]
+    setSelectedStacks(newStacks)
+    updateURL(newStacks, selectedStatus)
+    Analytics.trackEvent('filter_changed', { type: 'stack', value: stack, selected: newStacks })
+  }
+
+  const handleStatusChange = (status: 'all' | 'Ativo' | 'Arquivado') => {
+    setSelectedStatus(status)
+    updateURL(selectedStacks, status)
+    Analytics.trackEvent('filter_changed', { type: 'status', value: status })
+  }
+
+  // Sync from URL on mount / param change (for direct links)
+  useEffect(() => {
+    const urlStacks = searchParams?.get('stacks') ? searchParams!.get('stacks')!.split(',') : []
+    const urlStatus = (searchParams?.get('status') as 'all' | 'Ativo' | 'Arquivado') || 'all'
+    if (JSON.stringify(urlStacks) !== JSON.stringify(selectedStacks)) {
+      setSelectedStacks(urlStacks)
+    }
+    if (urlStatus !== selectedStatus) {
+      setSelectedStatus(urlStatus)
+    }
+  }, [searchParams])
 
   return (
     <>
-      {/* Filtros */}
-      <div className="mb-8 flex flex-wrap gap-4 items-center">
-        <div>
-          <span className="text-sm font-medium mr-2">Stacks:</span>
-          {allStacks.map(stack => (
-            <button
-              key={stack}
-              onClick={() => toggleStack(stack)}
-              className={`text-xs mr-2 mb-1 px-3 py-1 rounded-full border ${selectedStacks.includes(stack) ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
-            >
-              {stack}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex gap-2">
-          <button onClick={() => setSelectedStatus('all')} className={`text-sm px-3 py-1 rounded border ${selectedStatus === 'all' ? 'bg-primary text-white' : ''}`}>Todos</button>
-          <button onClick={() => setSelectedStatus('Ativo')} className={`text-sm px-3 py-1 rounded border ${selectedStatus === 'Ativo' ? 'bg-green-600 text-white' : ''}`}>Ativos</button>
-          <button onClick={() => setSelectedStatus('Arquivado')} className={`text-sm px-3 py-1 rounded border ${selectedStatus === 'Arquivado' ? 'bg-amber-600 text-white' : ''}`}>Arquivados</button>
-        </div>
-      </div>
+      <FilterBar
+        allStacks={allStacks}
+        selectedStacks={selectedStacks}
+        onToggleStack={toggleStack}
+        selectedStatus={selectedStatus}
+        onStatusChange={handleStatusChange}
+      />
 
       <div className="grid gap-8 md:grid-cols-2">
         {filtered.length === 0 && (
@@ -64,33 +92,7 @@ export default function ProjetosClient({ projects: initialProjects }: { projects
         )}
 
         {filtered.map((project) => (
-          <div key={project.slug} className="rounded-lg border p-8 flex flex-col">
-            <div className="flex items-start justify-between mb-4">
-              <h2 className="text-2xl font-bold">{project.title}</h2>
-              <span className={`text-xs px-2 py-1 rounded-full border ${project.status === 'Ativo' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
-                {project.status}
-              </span>
-            </div>
-
-            <p className="text-muted-foreground mb-6 flex-1">{project.description}</p>
-
-            <div className="flex flex-wrap gap-2 mb-6">
-              {project.stacks.slice(0, 5).map((stack) => (
-                <span key={stack} className="text-xs bg-muted px-2 py-1 rounded">{stack}</span>
-              ))}
-            </div>
-
-            <div className="flex gap-3">
-              <Link href={`/projetos/${project.slug}`}>
-                <Button>Ver detalhes</Button>
-              </Link>
-              {project.liveUrl && (
-                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline">Ver live</Button>
-                </a>
-              )}
-            </div>
-          </div>
+          <ProjectCard key={project.slug} project={project} />
         ))}
       </div>
     </>

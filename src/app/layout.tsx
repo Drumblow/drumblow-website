@@ -24,8 +24,20 @@ const jetBrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Drumblow FabricApps",
-  description: "Modern and interactive website for Drumblow FabricApps",
+  title: {
+    default: "Drumblow",
+    template: "%s | Drumblow",
+  },
+  description: "Desenvolvimento de software de alto nível. Rust para sistemas críticos, Flutter cross-platform e Next.js moderno. Cases reais: Igreja Manager, BeeNorth 3D, Invoice e Jumb.",
+  metadataBase: new URL('https://drumblow.com'),
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Drumblow - Software de produção com excelência técnica",
+    description: "Projetos reais em produção com Rust, Flutter e Next.js. Transformando ideias complexas em soluções robustas.",
+    images: [{ url: "/drumblow-logo.png" }],
+  },
 }
 
 export default function RootLayout({

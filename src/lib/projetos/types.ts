@@ -1,4 +1,5 @@
 import { MDXRemoteSerializeResult } from 'next-mdx-remote'
+import { z } from 'zod'
 
 export interface ProjectMeta {
   title: string
@@ -34,3 +35,15 @@ export interface ProjectFrontmatter {
   metrics?: Record<string, number | string>
   date?: string
 }
+
+export const ProjectFrontmatterSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  stacks: z.array(z.string()),
+  domains: z.array(z.string()),
+  country: z.enum(['Brasil', 'Canadá', 'Internacional']),
+  status: z.enum(['Ativo', 'Arquivado']),
+  liveUrl: z.string().optional(),
+  metrics: z.record(z.union([z.number(), z.string()])).optional(),
+  date: z.string().optional(),
+})

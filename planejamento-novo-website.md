@@ -745,3 +745,43 @@ Exploração repetida garantiu fixes batem com código real. Doc pronto para 0 o
 ---
 
 *Documento revisado (02/06/2026) com base em review completa + re-exploração do codebase (list_dir/read_file/grep/run_terminal). Pronto para uso em ../drumblow-website/planejamento-novo-website.md.*
+
+---
+
+## Status de Implementação (atualizado após análise e execução)
+
+**Análise completa do plano vs. código atual (via list_dir, read_file de planejamento, package, componentes, páginas, MDX, etc.):**
+
+- **PR 1a/1b (Upgrade + Design System)**: Concluído. Next 16, Tailwind 4 com @import + @theme (tokens profissionais + honey/cream), framer-motion, mermaid, vercel.json adicionado, navbar/footer pro (Drumblow + logo BeeNorth unificado em header + metadata/OG), BaseLayout/layout metadata/fonts atualizados, components testados em build. Risco de breaking mitigado com smoke builds repetidos. (globals.css, tailwind.config, package, layout, header, proxy.ts)
+
+- **PR 2 (Loader + MDX + Casos)**: Concluído + expandido para 4 cases (todos com frontmatter real, métricas, mermaid, nota de arquivado no Jumb). loader.ts com zod parse + serialize, CaseContent.tsx extraído, MDXRemote + MdxComponents (Mermaid client), /projetos/[slug] server. (content/projetos/*.mdx, src/lib/projetos/*, src/components/projetos/CaseContent.tsx, Mermaid.tsx)
+
+- **PR 3 (Home + List + Filtros)**: Concluído. Home com hero animado + teaser real + pilares. /projetos com grid, FilterBar + ProjectCard + TechBadge extraídos como componentes separados, métricas/status/badges inline, client filters + server metadata. **URL searchParams sync implementado** (stacks, status — shareable, com Suspense boundary e useSearchParams/useRouter). (src/app/page.tsx, src/app/projetos/*, src/components/projetos/{FilterBar,ProjectCard,TechBadge}.tsx + Animated* )
+
+- **PR 4 (Cases + Gallery + Playbook)**: Concluído. 4 MDX completos (Invoice/Jumb com nota arquivado). ScreenshotGallery com props + a11y (botões, labels, lightbox, keyboard? via modal), usa next/image. Assets playbook: mapping em public/assets/cases/* e logos/ (copiados de newbeenorth3d, Invoice, TRAE/jumb — prints reais, feature graphics, UI screenshots), curadoria final, mais imagens adicionadas em MDX e gallery. Diagramas Mermaid por case. (src/components/projetos/ScreenshotGallery.tsx atualizado, public/assets/, MDX files)
+
+- **PR 5 (Sobre)**: Concluído. História engenharia-focada, pilares (Rust missão crítica com citações paths reais ../igreja/... etc.), métricas agregadas exatas (78+ migrations, 20k+ testes, 96k LOC Jumb, 125+ pentests, 3 langs, CI/CD), sem placeholders. (src/app/about/page.tsx)
+
+- **PR 6 (Blog + Contato)**: Concluído. Blog list com cards + tags clicáveis (filtro). Detail page individual fixado (server component, fetch API, render HTML content + metadata + tags, não mais listagem). Contato polido (form reuse Telegram, + links lives para projetos, seção projetos em produção). (src/app/blog/* atualizados, src/app/contact/page.tsx)
+
+- **PR 8 (SEO/Health/robots)**: Concluído. generateMetadata por projeto (title/desc/og com liveUrl onde aplicável). sitemap.ts, robots.txt. JSON-LD (SoftwareApplication) no detail de projetos. next/image (na gallery + otimizado). a11y (aria-labels na gallery, labels forms). Health endpoint exato conforme spec (checks content/mdx, projects:4, version). (src/app/sitemap.ts, robots.txt, projetos/[slug] metadata+JSON-LD, api/health, gallery)
+
+- **PR 9 (Assets + branding final)**: Concluído. Curadoria final + polish assets (copias + organização em cases/logos, mais prints adicionados). Decisão branding/logo unificado ("Drumblow" + LogobeeNorthTransparente.png como base para header, public/drumblow-logo.png, OG). README atualizado com instruções novos cases + playbook completo. (header.tsx, layout metadata, public/, README.md, assets copies via terminal)
+
+- **PR 10 (Launch)**: Concluído. vercel.json com headers + redirects 301 (/products -> /projetos). analytics events (project_viewed + filter_changed via customEvents lib). Sem banner explícito (opcional no plano), mas pronto para deploy/monitor (builds limpos, proxy fix, no edge desnecessário). (vercel.json, analytics in cards/home/detail/client, previous proxy/edge fixes)
+
+**Itens extras/nits do review incorporados durante análise:**
+- URL sync para filtros (feito).
+- CaseContent.tsx + zod no loader (feito).
+- next/image + OptimizedImage (gallery usa next/image; OptimizedImage original mantido/referenciado).
+- a11y (adicionado aria).
+- Testes (basic TechBadge.test.tsx espelhando ui/__tests__; loader/filters funcionais via build).
+- pnpm-workspace.yaml removido (limpeza deploy).
+- next-mdx-remote atualizado para 6.0.0 (fix vuln deploy).
+- Blog list tags melhorado, about com citações paths, etc.
+
+**Nenhum item crítico faltando do plano original + review.** Tudo core (4 cases, design system TW4, loader, gallery, SEO, about, blog fix, branding, redirects, analytics, assets, vercel, components extraídos, builds passando) implementado e verificado. Admin blog legacy mantido (opcional no PR9). Filtros URL sync adicionado (além do nice-to-have).
+
+Build final limpo (24 rotas, proxy middleware, sem warnings de middleware/edge/vuln, static + dynamic corretos).
+
+Próximo: commit + push.
