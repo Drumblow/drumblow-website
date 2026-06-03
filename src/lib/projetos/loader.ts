@@ -4,17 +4,28 @@ import matter from 'gray-matter'
 import { z } from 'zod'
 import { ProjectContent, ProjectMeta, ProjectFrontmatter, ProjectFrontmatterSchema } from './types'
 
-const projectsDirectory = path.join(process.cwd(), 'content/projetos')
+const baseProjectsDirectory = path.join(process.cwd(), 'content/projetos')
 
-export async function getProject(slug: string): Promise<ProjectContent | null> {
+function getLocaleDirectory(locale: string): string {
+  return path.join(baseProjectsDirectory, locale)
+}
+
+export async function getProject(slug: string, locale: string = 'pt-BR'): Promise<ProjectContent | null> {
   try {
-    if (!fs.existsSync(projectsDirectory)) {
-      return null
+    const localeDir = getLocaleDirectory(locale)
+    const fallbackDir = getLocaleDirectory('pt-BR')
+    
+    let fullPath = path.join(localeDir, `${slug}.mdx`)
+    
+    // Fallback to pt-BR if file doesn't exist in requested locale
+    if (!fs.existsSync(fullPath) && locale !== 'pt-BR') {
+      fullPath = path.join(fallbackDir, `${slug}.mdx`)
     }
-    const fullPath = path.join(projectsDirectory, `${slug}.mdx`)
+    
     if (!fs.existsSync(fullPath)) {
       return null
     }
+    
     const fileContents = fs.readFileSync(fullPath, 'utf8')
     const { data, content } = matter(fileContents)
 
@@ -43,19 +54,24 @@ export async function getProject(slug: string): Promise<ProjectContent | null> {
   }
 }
 
-export async function getAllProjects(): Promise<ProjectMeta[]> {
-  if (!fs.existsSync(projectsDirectory)) {
+export async function getAllProjects(locale: string = 'pt-BR'): Promise<ProjectMeta[]> {
+  const localeDir = getLocaleDirectory(locale)
+  const fallbackDir = getLocaleDirectory('pt-BR')
+  
+  const targetDir = fs.existsSync(localeDir) ? localeDir : fallbackDir
+  
+  if (!fs.existsSync(targetDir)) {
     return []
   }
 
-  const files = fs.readdirSync(projectsDirectory)
+  const files = fs.readdirSync(targetDir)
   const projects: ProjectMeta[] = []
 
   for (const file of files) {
     if (!file.endsWith('.mdx')) continue
 
     const slug = file.replace(/\.mdx$/, '')
-    const project = await getProject(slug)
+    const project = await getProject(slug, locale)
     if (project) {
       projects.push(project.meta)
     }

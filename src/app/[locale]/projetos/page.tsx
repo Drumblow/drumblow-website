@@ -13,9 +13,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   }
 }
 
-export default async function ProjetosPage() {
+export default async function ProjetosPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   const t = await getTranslations("Projects")
-  const projects = await getAllProjects()
+  const projects = await getAllProjects(locale)
 
   return (
     <div className="container py-16">

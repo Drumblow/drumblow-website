@@ -36,8 +36,8 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
-  const { slug } = await params
-  const project = await getProject(slug)
+  const { slug, locale } = await params
+  const project = await getProject(slug, locale)
   const t = await getTranslations("Projects")
 
   if (!project) {
@@ -46,7 +46,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const { meta, content } = project
 
-  const statusLabel = meta.status === 'Ativo' ? 'Active' : 'Archived'
+  const statusLabel = meta.status === 'Ativo' ? t("status_active") : t("status_archived")
 
   return (
     <div className="container py-16">

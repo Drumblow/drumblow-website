@@ -1,0 +1,40 @@
+---
+title: "Jumb (Archived)"
+description: "Advanced tourism and local experiences marketplace (Brazil + international tourists). Bookings, insurance (Roca), Stripe, maps, notifications and complete admin."
+stacks: ["Flutter", "Node.js", "TypeScript", "Express", "PostgreSQL", "Stripe", "Firebase", "Google Maps"]
+domains: ["Marketplace", "Tourism", "Bookings"]
+country: "Brasil"
+status: "Arquivado"
+metrics:
+  totalLOC: 96000
+  migrations: 31
+  tests: 20000
+date: "2026-02-01"
+---
+
+# Jumb
+
+Marketplace platform connecting tourists to local experiences and guides, with full support for international tourists. Large-scale project demonstrating capability in complex, high-volume products.
+
+## Stack and Scale
+
+- **App**: Flutter full cross-platform (Android, iOS, Web, Windows, macOS, Linux)
+- **Backend**: Node.js + TypeScript + Express + pg
+- **Integrations**: Stripe (payments with fees), Roca Seguros (full insurance flow), Firebase (FCM + Auth), Google Maps / Geocoding, Cloudinary
+
+## Highlights
+
+- ~96,000 lines of code, 31 migrations, over 20 thousand lines of tests (Jest + Flutter)
+- CI/CD, Docker, nginx, extensive documentation and deploy guides
+- Features: activities, bookings, providers, reviews, notifications, support tickets, KYC, pricing groups, admin
+
+**Status**: Archived after advanced development and production of high-quality documentation and tests. Excellent reference for capability in complex marketplaces.
+
+```mermaid
+graph LR
+  Flutter[Flutter Multiplatform] --> Backend[Node/TS Express]
+  Backend --> PG[(PostgreSQL)]
+  Backend --> Stripe
+  Backend --> Roca[Roca Insurance]
+  Backend --> Firebase[Firebase + Maps]
+```
